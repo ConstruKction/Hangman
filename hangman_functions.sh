@@ -15,17 +15,10 @@ cat << "EOF"
 |_| |_|\__,_|_| |_|\__, |_| |_| |_|\__,_|_| |_|
                    |___/                       
 EOF
-
-if [ `expr length $word` == 0 ]
-then
-	echo "Welcome to hangman! Start guessing!"
-	guess_letter
-else
-	echo "Welcome to hangman! Please choose your word:"
-	read input_word
-	word=$input_word
-	guess_letter
-fi
+echo "Welcome to hangman! Please choose your word:"
+read input_word
+word=$input_word
+guess_letter
 }
 
 welcome_words() {
@@ -170,18 +163,21 @@ end() {
 	echo "You lost!"
 	echo "The word was: $word."
 	unset word
-	echo $word
+	unset error
+	unset correct
+	unset letters
 
 	read -p "Play again? (y/N)?" choice
 	case "$choice" in 
     	y|Y)
-			read -p "Type your word or leave empty for random:" new_word
-			if [ `echo -n $new_word | wc -c > /dev/null` ! 0 ]
+			echo "Type your word or leave empty for random:" 
+			read new_word
+			if [[ `echo -n $new_word | wc -c` == 0 ]]
 			then
-				word = $new_word
-				welcome_word
-			else
 				welcome_words
+			else
+				word=$new_word
+				welcome_word
 			fi
 		;;
   		n|N) 
@@ -204,53 +200,62 @@ usage() {
 guess_letter() {
 	echo $word
 	read input_letter
-	if [[ $word == *"$input_letter"* ]]
+	if [[ `echo -n $input_letter | wc -c` == 1 ]]
 	then
-		clear
-		echo "It's there!"
-		let "correct++"
+		if [[ $input_letter != *"$letters"* ]]
+		then
+			if [[ $word == *"$input_letter"* ]] 
+			then
+				clear
+				echo "It's there!"
+				let "correct++"
+			else
+				clear
+				echo "It's not there!"
+				let "error++"
+			fi
+			letters="$letters$input_letter"
+
+			case "$error" in
+				"1")
+					show_bottom_support
+					;;
+				"2")
+					show_vertical_pole
+					;;
+				"3")
+					show_hang_pole
+					;;
+				"4")	
+					show_rope
+					;;
+				"5")
+					show_head
+					;;
+				"6")
+					show_torso
+					;;
+				"7")
+					show_left_arm
+					;;
+				"8")
+					show_right_arm
+					;;
+				"9")
+					show_left_leg
+					;;
+				"10")
+					show_hangman
+					end
+					;;
+				*)
+			esac
+		
+			guess_letter
+		fi
 	else
-		clear
-		echo "It's not there!"
-		let "error++"
+		echo "Invalid input! $input_letter already used."
+		guess_letter
 	fi
 
-	letters="$letters$input_letter"
-
-	case "$error" in
-		"1")
-			show_bottom_support
-			;;
-		"2")
-			show_vertical_pole
-			;;
-		"3")
-			show_hang_pole
-			;;
-		"4")
-			show_rope
-			;;
-		"5")
-			show_head
-			;;
-		"6")
-			show_torso
-			;;
-		"7")
-			show_left_arm
-			;;
-		"8")
-			show_right_arm
-			;;
-		"9")
-			show_left_leg
-			;;
-		"10")
-			show_hangman
-			end
-			;;
-		*)
-	esac
-	
-	guess_letter
 }
