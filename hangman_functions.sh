@@ -213,7 +213,7 @@ guess_letter() {
 	then
 		if [[ "$letters" =~ "$input_letter" ]]
 		then
-			echo "already guessed this character! Try again: "
+			echo "Already guessed this character! Try again: "
 			guess_letter
 		else
 			if [[ $word == *"$input_letter"* ]] 
@@ -258,7 +258,7 @@ guess_letter() {
 					;;
 				"10")
 					show_hangman
-					echo "you've lost!"
+					echo "You've lost!"
 					end
 					;;
 				*)
