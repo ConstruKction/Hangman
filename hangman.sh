@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 . hangman_functions.sh
 
 if [ $# -eq 0 ]
