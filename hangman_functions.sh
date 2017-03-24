@@ -4,7 +4,7 @@ declare word
 declare counter=0
 declare error=0
 declare correct=0
-declare letters
+declare letters="&"
 
 welcome_word() {
 cat << "EOF"
@@ -160,16 +160,24 @@ EOF
 }
 
 end() {
-	echo "You lost!"
 	echo "The word was: $word."
 	unset word
 	unset error
 	unset correct
 	unset letters
+	letters="#"
 
 	read -p "Play again? (y/N)?" choice
 	case "$choice" in 
     	y|Y)
+		cat << "EOF"
+ _                                             
+| |__   __ _ _ __   __ _ _ __ ___   __ _ _ __  
+| '_ \ / _` | '_ \ / _` | '_ ` _ \ / _` | '_ \ 
+| | | | (_| | | | | (_| | | | | | | (_| | | | |
+|_| |_|\__,_|_| |_|\__, |_| |_| |_|\__,_|_| |_|
+		   |___/                       
+EOF
 			echo "Type your word or leave empty for random:" 
 			read new_word
 			if [[ `echo -n $new_word | wc -c` == 0 ]]
@@ -177,7 +185,7 @@ end() {
 				welcome_words
 			else
 				word=$new_word
-				welcome_word
+				guess_letter
 			fi
 		;;
   		n|N) 
@@ -200,10 +208,14 @@ usage() {
 guess_letter() {
 	echo $word
 	read input_letter
+
 	if [[ `echo -n $input_letter | wc -c` == 1 ]]
 	then
-		if [[ $input_letter != *"$letters"* ]]
+		if [[ "$letters" =~ "$input_letter" ]]
 		then
+			echo "already guessed this character! Try again: "
+			guess_letter
+		else
 			if [[ $word == *"$input_letter"* ]] 
 			then
 				clear
@@ -246,10 +258,17 @@ guess_letter() {
 					;;
 				"10")
 					show_hangman
+					echo "you've lost!"
 					end
 					;;
 				*)
 			esac
+
+			if [[ $correct == `echo -n $word | sed 's/./\&\n/g' | sort -u | wc -c` ]]
+			then
+				echo "You guessed it!"
+				end
+			fi	
 		
 			guess_letter
 		fi
