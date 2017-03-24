@@ -182,6 +182,7 @@ end() {
 	unset correct
 	unset letters
 	letters="&"
+	error=0
 
 	read -p "Play again? (y/N)?" choice
 	case "$choice" in 
@@ -205,12 +206,12 @@ EOF
 			fi
 		;;
   		n|N) 
-			exit
 			echo "Come back soon!"
+			exit
 			;;
   		*) 
-			exit 
 			echo "Come back soon!"
+			exit 
 			;;
 	esac
 }
@@ -240,7 +241,7 @@ guess_letter() {
 				let "correct++"
 			else
 				clear
-				echo "It's not there! Tries left: `expr 10 - $error`"
+				echo "It's not there! Tries left: `expr 9 - $error`"
 				let "error++"
 			fi
 			letters="$letters$input_letter"
