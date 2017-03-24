@@ -1,11 +1,26 @@
-#!/bin/bash -x
-. hangman_sort.sh
+#!/bin/bash
 
 declare word
 declare counter=0
 declare error=0
 declare correct=0
 declare letters="&"
+declare alphabet="abcdefghijklmnopqrstuvwxyz"
+
+trap ctrl_c INT
+
+ctrl_c() {
+	echo "You stopped the script."
+	if [[ `echo -n $word | wc -m` == 0 ]]
+	then
+		echo "Goodbye."
+	else
+		echo "The word was: $word."
+		echo "Goodbye."
+	fi
+
+	exit 0
+}
 
 welcome_word() {
 cat << "EOF"
@@ -166,7 +181,7 @@ end() {
 	unset error
 	unset correct
 	unset letters
-	letters="#"
+	letters="&"
 
 	read -p "Play again? (y/N)?" choice
 	case "$choice" in 
@@ -181,7 +196,7 @@ end() {
 EOF
 			echo "Type your word or leave empty for random:" 
 			read new_word
-			if [[ `echo -n $new_word | wc -c` == 0 ]]
+			if [[ `echo -n $new_word | wc -m` == 0 ]]
 			then
 				welcome_words
 			else
@@ -207,10 +222,11 @@ usage() {
 }
 
 guess_letter() {
-	echo $word
+	echo "Available letters: `echo "$alphabet" | tr $letters " "`"
+
 	read input_letter
 
-	if [[ `echo -n $input_letter | wc -c` == 1 ]]
+	if [[ `echo -n $input_letter | wc -m` == 1 ]]
 	then
 		if [[ "$letters" =~ "$input_letter" ]]
 		then
@@ -224,10 +240,20 @@ guess_letter() {
 				let "correct++"
 			else
 				clear
-				echo "It's not there!"
+				echo "It's not there! Tries left: `expr 10 - $error`"
 				let "error++"
 			fi
 			letters="$letters$input_letter"
+
+			for (( i=0; i<${#word}; i++ )); do
+				if [[ "$letters" == *"${word:$i:1}"* ]]
+				then
+					echo -n "${word:$i:1}" | tr -d "\n"
+				else
+					echo "." | tr -d "\n"
+				fi
+			done
+			printf "\n"
 
 			case "$error" in
 				"1")
@@ -274,8 +300,7 @@ guess_letter() {
 			guess_letter
 		fi
 	else
-		echo "Invalid input! $input_letter already used."
+		echo "Invalid input!"
 		guess_letter
 	fi
-
 }
