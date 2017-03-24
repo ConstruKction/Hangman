@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/bash -x
+. hangman_sort.sh
 
 declare word
 declare counter=0
@@ -264,7 +265,7 @@ guess_letter() {
 				*)
 			esac
 
-			if [[ $correct == `echo -n $word | sed 's/./\&\n/g' | sort -u | wc -c` ]]
+			if [[ $correct == `echo -n $word | grep -o . | sort | tr -d "\n" | tr -d \'\" | tr -s 'a-z' | wc -m` ]]
 			then
 				echo "You guessed it!"
 				end
