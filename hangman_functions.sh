@@ -200,7 +200,7 @@ EOF
 }
 
 usage() {
-	echo "hangman: usage: hangman -w your_word"
+	echo "hangman: usage: hangman -w"
 	echo "hangman: usage: hangman -d"
 	exit 1
 }
