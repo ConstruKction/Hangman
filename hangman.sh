@@ -1,17 +1,21 @@
 #!/bin/bash
 . hangman_functions.sh
 
-if [ $# -eq 0 ]
-then
-	usage
-fi
-
-if [ $1 == '-w' ]
-then
-	welcome_word
-elif [ $1 == '-d' ]
-then
-	welcome_words
-else
-	usage
-fi
+while getopts ":hwd" o; do
+	case "$o" in
+		h)
+			echo "-h: help"
+			echo "-w: chosen word"
+			echo "-d: random word"
+			;;
+		w)
+			welcome_word
+			;;
+		d)
+			welcome_words
+			;;
+		*)
+			usage
+			;;
+	esac
+done
